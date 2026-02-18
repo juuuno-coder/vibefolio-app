@@ -19,7 +19,9 @@ import {
   Sparkles,
   Check,
   AlertCircle,
+  Upload,
 } from "lucide-react-native";
+import { pickImage } from "@/lib/imagePicker";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function QuickPostScreen() {
@@ -156,18 +158,32 @@ export default function QuickPostScreen() {
 
             {/* Thumbnail Preview */}
             {thumbnailUrl ? (
-              <Image
-                source={{ uri: thumbnailUrl }}
-                className="w-full h-48 rounded-xl mb-4"
-                contentFit="cover"
-              />
-            ) : (
-              <View className="w-full h-48 rounded-xl mb-4 bg-slate-100 items-center justify-center">
-                <AlertCircle size={24} color="#94a3b8" />
-                <Text className="text-sm text-slate-400 mt-2">
-                  No thumbnail available
+              <Pressable onPress={async () => {
+                const url = await pickImage();
+                if (url) setThumbnailUrl(url);
+              }}>
+                <Image
+                  source={{ uri: thumbnailUrl }}
+                  className="w-full h-48 rounded-xl mb-4"
+                  contentFit="cover"
+                />
+                <Text className="text-xs text-slate-400 text-center -mt-3 mb-3">
+                  Tap to change image
                 </Text>
-              </View>
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={async () => {
+                  const url = await pickImage();
+                  if (url) setThumbnailUrl(url);
+                }}
+                className="w-full h-48 rounded-xl mb-4 bg-slate-100 items-center justify-center border-2 border-dashed border-slate-300"
+              >
+                <Upload size={24} color="#94a3b8" />
+                <Text className="text-sm text-slate-400 mt-2">
+                  Tap to upload image
+                </Text>
+              </Pressable>
             )}
 
             {/* Title */}

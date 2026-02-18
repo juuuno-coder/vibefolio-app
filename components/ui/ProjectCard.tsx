@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { Heart, Eye, MessageCircle } from "lucide-react-native";
+import { Heart, Eye } from "lucide-react-native";
 import type { Project } from "@/lib/api/projects";
 
 interface Props {
@@ -10,6 +10,12 @@ interface Props {
 
 export function ProjectCard({ project }: Props) {
   const router = useRouter();
+  const user = project.users || project.User;
+  const displayName = user?.username || "Unknown";
+  const avatarUrl =
+    user?.avatar_url && user.avatar_url !== "/globe.svg"
+      ? user.avatar_url
+      : `https://api.dicebear.com/7.x/initials/png?seed=${displayName}`;
 
   return (
     <Pressable
@@ -35,28 +41,30 @@ export function ProjectCard({ project }: Props) {
           </Text>
         )}
         <View className="flex-row items-center mt-2 gap-3">
-          {project.user && (
-            <Text className="text-xs text-slate-400 flex-1" numberOfLines={1}>
-              {project.user.display_name}
+          <Pressable
+            onPress={() => router.push(`/user/${project.user_id}`)}
+            className="flex-row items-center flex-1 gap-1.5"
+          >
+            <Image
+              source={{ uri: avatarUrl }}
+              className="w-5 h-5 rounded-full bg-slate-200"
+              contentFit="cover"
+            />
+            <Text className="text-xs text-slate-400" numberOfLines={1}>
+              {displayName}
             </Text>
-          )}
+          </Pressable>
           <View className="flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">
               <Eye size={13} color="#94a3b8" />
               <Text className="text-xs text-slate-400">
-                {project.view_count}
+                {project.views_count || 0}
               </Text>
             </View>
             <View className="flex-row items-center gap-1">
               <Heart size={13} color="#94a3b8" />
               <Text className="text-xs text-slate-400">
-                {project.like_count}
-              </Text>
-            </View>
-            <View className="flex-row items-center gap-1">
-              <MessageCircle size={13} color="#94a3b8" />
-              <Text className="text-xs text-slate-400">
-                {project.comment_count}
+                {project.likes_count || 0}
               </Text>
             </View>
           </View>

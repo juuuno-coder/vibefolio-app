@@ -24,7 +24,7 @@ export default function UserProfileScreen() {
     enabled: !!id,
   });
 
-  // Fetch user's projects
+  // Fetch user's projects (server-side filter via userId param)
   const {
     data,
     fetchNextPage,
@@ -34,18 +34,15 @@ export default function UserProfileScreen() {
   } = useInfiniteQuery({
     queryKey: ["user-projects", id],
     queryFn: ({ pageParam = 1 }) =>
-      getProjects({ page: pageParam, limit: 20 }),
+      getProjects({ page: pageParam, limit: 20, userId: id }),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.hasMore ? allPages.length + 1 : undefined,
     initialPageParam: 1,
     enabled: !!id,
   });
 
-  const projects: Project[] =
+  const userProjects: Project[] =
     data?.pages.flatMap((page) => page.projects) ?? [];
-
-  // Filter to only this user's projects (client-side for now)
-  const userProjects = projects.filter((p) => p.user_id === id);
 
   return (
     <FlatList

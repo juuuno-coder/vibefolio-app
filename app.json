@@ -15,7 +15,12 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "net.vibefolio.app"
+      "bundleIdentifier": "net.vibefolio.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Used to take photos for your projects",
+        "NSPhotoLibraryUsageDescription": "Used to upload images for your projects"
+      },
+      "associatedDomains": ["applinks:vibefolio.net"]
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +28,26 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "net.vibefolio.app"
+      "package": "net.vibefolio.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "vibefolio.net",
+              "pathPrefix": "/project"
+            },
+            {
+              "scheme": "https",
+              "host": "vibefolio.net",
+              "pathPrefix": "/recruit"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -31,7 +55,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Used to upload images for your projects",
+          "cameraPermission": "Used to take photos for your projects"
+        }
+      ]
     ]
   }
 }
