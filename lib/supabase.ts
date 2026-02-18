@@ -2,8 +2,11 @@ import { createClient } from "@supabase/supabase-js";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-const SUPABASE_URL = "https://iougjxzscsonbibxjhad.supabase.co";
+const SUPABASE_URL =
+  process.env.EXPO_PUBLIC_SUPABASE_URL ||
+  "https://iougjxzscsonbibxjhad.supabase.co";
 const SUPABASE_ANON_KEY =
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvdWdqeHpzY3NvbmJpYnhqaGFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgyMDA1MTAsImV4cCI6MjA1Mzc3NjUxMH0.ELQAC7xBIc-hFJPVMnv_TxLbkvqrpk3rGVvnIWX_6Xs";
 
 // expo-secure-store adapter for Supabase Auth
