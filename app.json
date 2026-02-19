@@ -35,7 +35,6 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "net.vibefolio.app",
-      "versionCode": 1,
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
