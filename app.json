@@ -8,7 +8,6 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "scheme": "vibefolio",
-    "owner": "juuuno-coder",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -17,13 +16,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "net.vibefolio.app",
-      "buildNumber": "1",
       "infoPlist": {
         "NSCameraUsageDescription": "프로젝트 사진을 찍기 위해 카메라 접근이 필요합니다",
         "NSPhotoLibraryUsageDescription": "프로젝트 이미지를 업로드하기 위해 사진 라이브러리 접근이 필요합니다",
         "CFBundleAllowMixedLocalizations": true
       },
-      "associatedDomains": ["applinks:vibefolio.net"],
+      "associatedDomains": [
+        "applinks:vibefolio.net"
+      ],
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -37,13 +37,14 @@
       "package": "net.vibefolio.app",
       "versionCode": 1,
       "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE",
-        "INTERNET",
-        "ACCESS_NETWORK_STATE"
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.RECORD_AUDIO"
       ],
       "intentFilters": [
         {
@@ -66,7 +67,10 @@
               "pathPrefix": "/user"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -94,14 +98,10 @@
     ],
     "extra": {
       "eas": {
-        "projectId": ""
-      }
+        "projectId": "0fadd9e1-510c-43f9-a45c-742502b16bd5"
+      },
+      "router": {}
     },
-    "updates": {
-      "url": ""
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    }
+    "owner": "juuuno1116"
   }
 }
