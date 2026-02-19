@@ -64,7 +64,7 @@ export default function RootLayout() {
         <Stack
           screenOptions={{
             headerShown: false,
-            contentStyle: { backgroundColor: "#f8fafc" },
+            contentStyle: { backgroundColor: "#ffffff" },
           }}
         >
           <Stack.Screen name="(tabs)" />
@@ -74,7 +74,10 @@ export default function RootLayout() {
             options={{
               headerShown: true,
               headerTitle: "",
-              headerBackTitle: "Back",
+              headerBackTitle: "뒤로",
+              headerTintColor: "#16A34A",
+              headerStyle: { backgroundColor: "#ffffff" },
+              headerShadowVisible: false,
             }}
           />
           <Stack.Screen
@@ -82,7 +85,10 @@ export default function RootLayout() {
             options={{
               headerShown: true,
               headerTitle: "",
-              headerBackTitle: "Back",
+              headerBackTitle: "뒤로",
+              headerTintColor: "#16A34A",
+              headerStyle: { backgroundColor: "#ffffff" },
+              headerShadowVisible: false,
             }}
           />
           <Stack.Screen
@@ -90,7 +96,10 @@ export default function RootLayout() {
             options={{
               headerShown: true,
               headerTitle: "",
-              headerBackTitle: "Back",
+              headerBackTitle: "뒤로",
+              headerTintColor: "#16A34A",
+              headerStyle: { backgroundColor: "#ffffff" },
+              headerShadowVisible: false,
             }}
           />
           <Stack.Screen
@@ -98,7 +107,11 @@ export default function RootLayout() {
             options={{
               headerShown: true,
               headerTitle: "Quick Post",
-              headerBackTitle: "Back",
+              headerBackTitle: "뒤로",
+              headerTintColor: "#16A34A",
+              headerStyle: { backgroundColor: "#ffffff" },
+              headerShadowVisible: false,
+              headerTitleStyle: { fontWeight: "700", color: "#0f172a" },
             }}
           />
         </Stack>

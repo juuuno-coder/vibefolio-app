@@ -44,7 +44,7 @@ export default function QuickPostScreen() {
 
   const handleAnalyze = async () => {
     if (!url.trim()) {
-      Alert.alert("Error", "Please enter a URL");
+      Alert.alert("오류", "URL을 입력해주세요");
       return;
     }
 
@@ -62,7 +62,7 @@ export default function QuickPostScreen() {
       setSourceUrl(result.source_url);
       setStep("edit");
     } catch (e: any) {
-      Alert.alert("Analysis Failed", e.message || "Could not analyze the URL");
+      Alert.alert("분석 실패", e.message || "URL을 분석할 수 없습니다");
     } finally {
       setAnalyzing(false);
     }
@@ -70,7 +70,7 @@ export default function QuickPostScreen() {
 
   const handlePublish = async () => {
     if (!title.trim()) {
-      Alert.alert("Error", "Title is required");
+      Alert.alert("오류", "제목은 필수입니다");
       return;
     }
 
@@ -84,15 +84,19 @@ export default function QuickPostScreen() {
         genre: genre || undefined,
         field: field || undefined,
       });
-      Alert.alert("Published!", "Your project has been posted.", [
-        { text: "OK", onPress: () => router.replace("/(tabs)") },
+      Alert.alert("게시 완료!", "프로젝트가 등록되었습니다.", [
+        { text: "확인", onPress: () => router.replace("/(tabs)") },
       ]);
     } catch (e: any) {
-      Alert.alert("Failed", e.message || "Could not publish");
+      Alert.alert("실패", e.message || "게시할 수 없습니다");
     } finally {
       setSubmitting(false);
     }
   };
+
+  // Step indicator
+  const steps = ["URL", "수정", "카테고리"];
+  const stepIndex = step === "url" ? 0 : step === "edit" ? 1 : 2;
 
   return (
     <KeyboardAvoidingView
@@ -101,9 +105,44 @@ export default function QuickPostScreen() {
     >
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Step Indicator */}
+        <View className="flex-row items-center justify-center mb-6 gap-2">
+          {steps.map((s, i) => (
+            <View key={s} className="flex-row items-center">
+              <View
+                className="w-7 h-7 rounded-full items-center justify-center"
+                style={{
+                  backgroundColor: i <= stepIndex ? "#16A34A" : "#e2e8f0",
+                }}
+              >
+                <Text
+                  className="text-xs font-bold"
+                  style={{ color: i <= stepIndex ? "#fff" : "#94a3b8" }}
+                >
+                  {i + 1}
+                </Text>
+              </View>
+              <Text
+                className="text-xs ml-1 font-medium"
+                style={{ color: i <= stepIndex ? "#16A34A" : "#94a3b8" }}
+              >
+                {s}
+              </Text>
+              {i < steps.length - 1 && (
+                <View
+                  className="w-8 h-0.5 mx-2"
+                  style={{
+                    backgroundColor: i < stepIndex ? "#16A34A" : "#e2e8f0",
+                  }}
+                />
+              )}
+            </View>
+          ))}
+        </View>
+
         {/* Step 1: URL Input */}
         {step === "url" && (
           <View>
@@ -111,7 +150,7 @@ export default function QuickPostScreen() {
               Quick Post
             </Text>
             <Text className="text-sm text-slate-400 mb-6">
-              Paste your project URL and AI will create a post for you
+              프로젝트 URL을 입력하면 AI가 자동으로 분석합니다
             </Text>
 
             <View className="flex-row items-center bg-slate-50 rounded-xl border border-slate-200 px-4 h-14 mb-4">
@@ -131,19 +170,25 @@ export default function QuickPostScreen() {
             <Pressable
               onPress={handleAnalyze}
               disabled={analyzing}
-              className={`h-14 rounded-xl flex-row items-center justify-center gap-2 ${
-                analyzing ? "bg-indigo-300" : "bg-indigo-500"
-              }`}
+              className="h-14 rounded-full flex-row items-center justify-center gap-2"
+              style={{
+                backgroundColor: analyzing ? "#86efac" : "#16A34A",
+                shadowColor: "#16A34A",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: analyzing ? 0 : 0.3,
+                shadowRadius: 12,
+                elevation: analyzing ? 0 : 6,
+              }}
             >
               <Sparkles size={20} color="#ffffff" />
               <Text className="text-white font-bold text-base">
-                {analyzing ? "Analyzing..." : "AI Analyze"}
+                {analyzing ? "분석 중..." : "AI 분석"}
               </Text>
             </Pressable>
 
             {analyzing && (
               <View className="mt-6">
-                <LoadingSpinner message="AI is analyzing the URL..." />
+                <LoadingSpinner message="AI가 URL을 분석하고 있습니다..." />
               </View>
             )}
           </View>
@@ -153,22 +198,25 @@ export default function QuickPostScreen() {
         {step === "edit" && (
           <View>
             <Text className="text-lg font-bold text-slate-900 mb-4">
-              Review & Edit
+              내용 확인 및 수정
             </Text>
 
             {/* Thumbnail Preview */}
             {thumbnailUrl ? (
-              <Pressable onPress={async () => {
-                const url = await pickImage();
-                if (url) setThumbnailUrl(url);
-              }}>
+              <Pressable
+                onPress={async () => {
+                  const url = await pickImage();
+                  if (url) setThumbnailUrl(url);
+                }}
+              >
                 <Image
                   source={{ uri: thumbnailUrl }}
-                  className="w-full h-48 rounded-xl mb-4"
+                  className="w-full rounded-2xl mb-4"
+                  style={{ aspectRatio: 4 / 3 }}
                   contentFit="cover"
                 />
                 <Text className="text-xs text-slate-400 text-center -mt-3 mb-3">
-                  Tap to change image
+                  탭하여 이미지 변경
                 </Text>
               </Pressable>
             ) : (
@@ -177,36 +225,37 @@ export default function QuickPostScreen() {
                   const url = await pickImage();
                   if (url) setThumbnailUrl(url);
                 }}
-                className="w-full h-48 rounded-xl mb-4 bg-slate-100 items-center justify-center border-2 border-dashed border-slate-300"
+                className="w-full rounded-2xl mb-4 bg-slate-50 items-center justify-center border-2 border-dashed border-slate-200"
+                style={{ aspectRatio: 4 / 3 }}
               >
                 <Upload size={24} color="#94a3b8" />
                 <Text className="text-sm text-slate-400 mt-2">
-                  Tap to upload image
+                  탭하여 이미지 업로드
                 </Text>
               </Pressable>
             )}
 
             {/* Title */}
             <Text className="text-sm font-semibold text-slate-500 mb-1">
-              Title
+              제목
             </Text>
             <TextInput
               className="bg-slate-50 rounded-xl border border-slate-200 px-4 py-3 text-base text-slate-900 mb-3"
               value={title}
               onChangeText={setTitle}
-              placeholder="Project title"
+              placeholder="프로젝트 제목"
               placeholderTextColor="#94a3b8"
             />
 
             {/* Description */}
             <Text className="text-sm font-semibold text-slate-500 mb-1">
-              Description
+              설명
             </Text>
             <TextInput
               className="bg-slate-50 rounded-xl border border-slate-200 px-4 py-3 text-base text-slate-900 mb-4"
               value={description}
               onChangeText={setDescription}
-              placeholder="Project description"
+              placeholder="프로젝트 설명"
               placeholderTextColor="#94a3b8"
               multiline
               numberOfLines={5}
@@ -216,16 +265,17 @@ export default function QuickPostScreen() {
 
             <Pressable
               onPress={() => setStep("category")}
-              className="h-14 rounded-xl bg-indigo-500 items-center justify-center"
+              className="h-14 rounded-full items-center justify-center"
+              style={{ backgroundColor: "#16A34A" }}
             >
-              <Text className="text-white font-bold text-base">Next</Text>
+              <Text className="text-white font-bold text-base">다음</Text>
             </Pressable>
 
             <Pressable
               onPress={() => setStep("url")}
               className="mt-3 items-center"
             >
-              <Text className="text-slate-400 text-sm">Back</Text>
+              <Text className="text-slate-400 text-sm">이전</Text>
             </Pressable>
           </View>
         )}
@@ -234,29 +284,33 @@ export default function QuickPostScreen() {
         {step === "category" && (
           <View>
             <Text className="text-lg font-bold text-slate-900 mb-4">
-              Select Category
+              카테고리 선택
             </Text>
 
             <Text className="text-sm font-semibold text-slate-500 mb-2">
-              Genre
+              장르
             </Text>
-            <View className="flex-row flex-wrap gap-2 mb-4">
+            <View className="flex-row flex-wrap gap-2 mb-5">
               {GENRE_CATEGORIES.map((cat) => (
                 <Pressable
                   key={cat.value}
                   onPress={() =>
                     setGenre(genre === cat.value ? "" : cat.value)
                   }
-                  className={`px-3 py-2 rounded-lg ${
-                    genre === cat.value
-                      ? "bg-indigo-500"
-                      : "bg-slate-100"
-                  }`}
+                  className="px-3.5 py-2 rounded-full"
+                  style={{
+                    backgroundColor:
+                      genre === cat.value ? "#16A34A" : "#f8fafc",
+                    borderWidth: 1,
+                    borderColor:
+                      genre === cat.value ? "#16A34A" : "#e2e8f0",
+                  }}
                 >
                   <Text
-                    className={`text-sm font-semibold ${
-                      genre === cat.value ? "text-white" : "text-slate-600"
-                    }`}
+                    className="text-sm font-semibold"
+                    style={{
+                      color: genre === cat.value ? "#fff" : "#64748b",
+                    }}
                   >
                     {cat.label}
                   </Text>
@@ -265,7 +319,7 @@ export default function QuickPostScreen() {
             </View>
 
             <Text className="text-sm font-semibold text-slate-500 mb-2">
-              Field
+              분야
             </Text>
             <View className="flex-row flex-wrap gap-2 mb-6">
               {FIELD_CATEGORIES.map((cat) => (
@@ -274,16 +328,20 @@ export default function QuickPostScreen() {
                   onPress={() =>
                     setField(field === cat.value ? "" : cat.value)
                   }
-                  className={`px-3 py-2 rounded-lg ${
-                    field === cat.value
-                      ? "bg-indigo-500"
-                      : "bg-slate-100"
-                  }`}
+                  className="px-3.5 py-2 rounded-full"
+                  style={{
+                    backgroundColor:
+                      field === cat.value ? "#16A34A" : "#f8fafc",
+                    borderWidth: 1,
+                    borderColor:
+                      field === cat.value ? "#16A34A" : "#e2e8f0",
+                  }}
                 >
                   <Text
-                    className={`text-sm font-semibold ${
-                      field === cat.value ? "text-white" : "text-slate-600"
-                    }`}
+                    className="text-sm font-semibold"
+                    style={{
+                      color: field === cat.value ? "#fff" : "#64748b",
+                    }}
                   >
                     {cat.label}
                   </Text>
@@ -294,13 +352,19 @@ export default function QuickPostScreen() {
             <Pressable
               onPress={handlePublish}
               disabled={submitting}
-              className={`h-14 rounded-xl flex-row items-center justify-center gap-2 ${
-                submitting ? "bg-indigo-300" : "bg-indigo-500"
-              }`}
+              className="h-14 rounded-full flex-row items-center justify-center gap-2"
+              style={{
+                backgroundColor: submitting ? "#86efac" : "#16A34A",
+                shadowColor: "#16A34A",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: submitting ? 0 : 0.3,
+                shadowRadius: 12,
+                elevation: submitting ? 0 : 6,
+              }}
             >
               <Check size={20} color="#ffffff" />
               <Text className="text-white font-bold text-base">
-                {submitting ? "Publishing..." : "Publish"}
+                {submitting ? "게시 중..." : "게시하기"}
               </Text>
             </Pressable>
 
@@ -308,7 +372,7 @@ export default function QuickPostScreen() {
               onPress={() => setStep("edit")}
               className="mt-3 items-center"
             >
-              <Text className="text-slate-400 text-sm">Back</Text>
+              <Text className="text-slate-400 text-sm">이전</Text>
             </Pressable>
           </View>
         )}

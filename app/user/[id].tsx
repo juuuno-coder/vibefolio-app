@@ -5,7 +5,7 @@ import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { getProjects, type Project } from "@/lib/api/projects";
 import { ProjectCard } from "@/components/ui/ProjectCard";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { LoadingSpinner, SkeletonCard } from "@/components/ui/LoadingSpinner";
 
 export default function UserProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -49,8 +49,9 @@ export default function UserProfileScreen() {
       className="flex-1 bg-white"
       data={userProjects}
       keyExtractor={(item) => item.project_id}
+      showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <View className="items-center py-6 border-b border-slate-100">
+        <View className="items-center py-8 mx-4 mb-2">
           <Image
             source={{
               uri:
@@ -61,19 +62,26 @@ export default function UserProfileScreen() {
             }}
             className="w-20 h-20 rounded-full bg-slate-200"
             contentFit="cover"
+            style={{ borderWidth: 3, borderColor: "#dcfce7" }}
           />
-          <Text className="text-xl font-bold text-slate-900 mt-3">
+          <Text className="text-xl font-black text-slate-900 mt-3">
             {profile?.display_name || "User"}
           </Text>
           {profile?.bio && (
-            <Text className="text-sm text-slate-400 mt-1 px-6 text-center">
+            <Text className="text-sm text-slate-400 mt-1.5 px-6 text-center leading-5">
               {profile.bio}
             </Text>
           )}
+          {/* Project count */}
+          <View className="mt-4 px-4 py-2 bg-green-50 rounded-full">
+            <Text className="text-xs font-bold text-green-700">
+              프로젝트 {userProjects.length}개
+            </Text>
+          </View>
         </View>
       }
       renderItem={({ item }) => (
-        <View className="px-4 pt-3">
+        <View className="px-4">
           <ProjectCard project={item} />
         </View>
       )}
@@ -87,11 +95,17 @@ export default function UserProfileScreen() {
         ) : null
       }
       ListEmptyComponent={
-        !isLoading ? (
-          <View className="items-center py-20">
-            <Text className="text-slate-400">No projects yet</Text>
+        isLoading ? (
+          <View className="px-4">
+            <SkeletonCard />
+            <SkeletonCard />
           </View>
-        ) : null
+        ) : (
+          <View className="items-center py-20">
+            <Text className="text-3xl mb-2">{"📂"}</Text>
+            <Text className="text-slate-400">아직 프로젝트가 없습니다</Text>
+          </View>
+        )
       }
       contentContainerStyle={{ paddingBottom: 20 }}
     />

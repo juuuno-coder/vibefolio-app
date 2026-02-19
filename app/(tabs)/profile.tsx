@@ -9,6 +9,7 @@ import {
   Bookmark,
   FolderOpen,
   Star,
+  Bell,
 } from "lucide-react-native";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -17,32 +18,47 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user, userProfile, loading, signOut } = useAuth();
 
-  if (loading) return <LoadingSpinner message="Loading..." />;
+  if (loading) return <LoadingSpinner message="불러오는 중..." />;
 
   if (!user) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-50 items-center justify-center" edges={["top"]}>
-        <Text className="text-lg font-bold text-slate-700 mb-2">
-          Login Required
+      <SafeAreaView
+        className="flex-1 bg-white items-center justify-center px-6"
+        edges={["top"]}
+      >
+        <View className="w-20 h-20 rounded-full bg-green-50 items-center justify-center mb-4">
+          <Text className="text-3xl">{"👋"}</Text>
+        </View>
+        <Text className="text-xl font-black text-slate-900 mb-1">
+          로그인이 필요합니다
         </Text>
-        <Text className="text-sm text-slate-400 mb-6">
-          Sign in to view your profile
+        <Text className="text-sm text-slate-400 mb-8 text-center">
+          Vibefolio에서 프로젝트를 공유하고{"\n"}다른 크리에이터를 만나보세요
         </Text>
         <Pressable
           onPress={() => router.push("/(auth)/login")}
-          className="bg-indigo-500 px-8 py-3 rounded-xl"
+          className="px-10 py-3.5 rounded-full"
+          style={{ backgroundColor: "#16A34A" }}
         >
-          <Text className="text-white font-bold text-base">Login</Text>
+          <Text className="text-white font-bold text-base">로그인</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => router.push("/(auth)/signup")}
+          className="mt-3"
+        >
+          <Text className="text-green-600 font-semibold text-sm">
+            계정이 없으신가요? 회원가입
+          </Text>
         </Pressable>
       </SafeAreaView>
     );
   }
 
   const handleSignOut = () => {
-    Alert.alert("Sign Out", "Are you sure?", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert("로그아웃", "정말 로그아웃 하시겠습니까?", [
+      { text: "취소", style: "cancel" },
       {
-        text: "Sign Out",
+        text: "로그아웃",
         style: "destructive",
         onPress: signOut,
       },
@@ -51,14 +67,28 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50" edges={["top"]}>
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
-        {/* Header */}
-        <View className="px-4 py-3">
-          <Text className="text-2xl font-black text-slate-900">My Page</Text>
-        </View>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Profile Header Card */}
+        <View
+          className="mx-4 mt-3 bg-white rounded-2xl p-5 overflow-hidden"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.06,
+            shadowRadius: 8,
+            elevation: 3,
+          }}
+        >
+          {/* Green accent bar */}
+          <View
+            className="absolute top-0 left-0 right-0 h-1"
+            style={{ backgroundColor: "#16A34A" }}
+          />
 
-        {/* Profile Card */}
-        <View className="mx-4 bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
           <View className="flex-row items-center">
             <Image
               source={{
@@ -68,16 +98,23 @@ export default function ProfileScreen() {
               }}
               className="w-16 h-16 rounded-full bg-slate-200"
               contentFit="cover"
+              style={{
+                borderWidth: 2,
+                borderColor: "#dcfce7",
+              }}
             />
             <View className="ml-4 flex-1">
-              <Text className="text-lg font-bold text-slate-900">
+              <Text className="text-lg font-black text-slate-900">
                 {userProfile?.display_name || "User"}
               </Text>
-              <Text className="text-sm text-slate-400">
+              <Text className="text-xs text-slate-400">
                 {userProfile?.email || user.email}
               </Text>
               {userProfile?.bio && (
-                <Text className="text-sm text-slate-500 mt-1" numberOfLines={2}>
+                <Text
+                  className="text-xs text-slate-500 mt-1"
+                  numberOfLines={2}
+                >
                   {userProfile.bio}
                 </Text>
               )}
@@ -85,42 +122,68 @@ export default function ProfileScreen() {
           </View>
 
           {/* Points */}
-          <View className="mt-4 flex-row items-center bg-indigo-50 rounded-xl px-4 py-3">
-            <Star size={18} color="#6366f1" />
-            <Text className="text-sm font-bold text-indigo-600 ml-2">
+          <View className="mt-4 flex-row items-center bg-green-50 rounded-xl px-4 py-3">
+            <Star size={16} color="#16A34A" fill="#16A34A" />
+            <Text className="text-sm font-bold text-green-700 ml-2">
               {userProfile?.points || 0}P
             </Text>
+            <View className="flex-1" />
+            <Text className="text-[10px] text-green-600">활동 포인트</Text>
           </View>
         </View>
 
         {/* Menu */}
-        <View className="mx-4 mt-4 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <View
+          className="mx-4 mt-4 bg-white rounded-2xl overflow-hidden"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.04,
+            shadowRadius: 6,
+            elevation: 2,
+          }}
+        >
           <MenuItem
-            icon={<FolderOpen size={20} color="#6366f1" />}
-            label="My Projects"
+            icon={<FolderOpen size={20} color="#16A34A" />}
+            label="내 프로젝트"
             onPress={() => {
               if (user) router.push(`/user/${user.id}`);
             }}
           />
           <MenuItem
-            icon={<Bookmark size={20} color="#6366f1" />}
-            label="Bookmarks"
+            icon={<Bookmark size={20} color="#16A34A" />}
+            label="북마크"
             onPress={() => {}}
           />
           <MenuItem
-            icon={<Settings size={20} color="#6366f1" />}
-            label="Settings"
+            icon={<Bell size={20} color="#16A34A" />}
+            label="알림 설정"
             onPress={() => {}}
+          />
+          <MenuItem
+            icon={<Settings size={20} color="#16A34A" />}
+            label="설정"
+            onPress={() => {}}
+            isLast
           />
         </View>
 
         {/* Sign Out */}
         <Pressable
           onPress={handleSignOut}
-          className="mx-4 mt-4 bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex-row items-center"
+          className="mx-4 mt-4 bg-white rounded-2xl px-4 py-4 flex-row items-center"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.04,
+            shadowRadius: 6,
+            elevation: 2,
+          }}
         >
           <LogOut size={20} color="#ef4444" />
-          <Text className="text-red-500 font-semibold ml-3">Sign Out</Text>
+          <Text className="text-red-500 font-semibold ml-3 text-sm">
+            로그아웃
+          </Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -131,19 +194,28 @@ function MenuItem({
   icon,
   label,
   onPress,
+  isLast,
 }: {
   icon: React.ReactNode;
   label: string;
   onPress: () => void;
+  isLast?: boolean;
 }) {
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center px-4 py-4 border-b border-slate-50"
+      className="flex-row items-center px-4 py-4"
+      style={
+        !isLast
+          ? { borderBottomWidth: 1, borderBottomColor: "#f8fafc" }
+          : undefined
+      }
     >
       {icon}
-      <Text className="flex-1 text-base text-slate-700 ml-3">{label}</Text>
-      <ChevronRight size={18} color="#cbd5e1" />
+      <Text className="flex-1 text-sm font-medium text-slate-700 ml-3">
+        {label}
+      </Text>
+      <ChevronRight size={16} color="#cbd5e1" />
     </Pressable>
   );
 }

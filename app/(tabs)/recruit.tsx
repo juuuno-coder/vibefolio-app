@@ -5,6 +5,7 @@ import {
   Pressable,
   TextInput,
   RefreshControl,
+  ScrollView,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,10 +17,10 @@ import { useState, useCallback } from "react";
 
 const LIMIT = 20;
 const TABS = [
-  { key: "all", label: "All" },
-  { key: "job", label: "Job" },
-  { key: "contest", label: "Contest" },
-  { key: "event", label: "Event" },
+  { key: "all", label: "전체" },
+  { key: "job", label: "채용" },
+  { key: "contest", label: "공모전" },
+  { key: "event", label: "이벤트" },
 ];
 
 export default function RecruitScreen() {
@@ -64,19 +65,31 @@ export default function RecruitScreen() {
   }, [searchInput]);
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
-      <View className="px-4 py-3">
-        <Text className="text-2xl font-black text-slate-900">Recruit</Text>
+      <View className="px-5 pt-3 pb-2">
+        <Text className="text-xl font-black text-slate-900">연결하기</Text>
+        <Text className="text-xs text-slate-400 mt-0.5">
+          채용, 공모전, 이벤트를 한곳에서
+        </Text>
       </View>
 
       {/* Search */}
       <View className="px-4 mb-2">
-        <View className="flex-row items-center bg-white rounded-xl border border-slate-200 px-3 h-11">
-          <Search size={18} color="#94a3b8" />
+        <View
+          className="flex-row items-center bg-slate-50 rounded-xl px-3.5 h-11"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.03,
+            shadowRadius: 4,
+            elevation: 1,
+          }}
+        >
+          <Search size={16} color="#94a3b8" />
           <TextInput
             className="flex-1 ml-2 text-sm text-slate-900"
-            placeholder="Search..."
+            placeholder="검색어를 입력하세요..."
             placeholderTextColor="#94a3b8"
             value={searchInput}
             onChangeText={setSearchInput}
@@ -90,36 +103,63 @@ export default function RecruitScreen() {
                 setSearch("");
               }}
             >
-              <X size={18} color="#94a3b8" />
+              <X size={16} color="#94a3b8" />
             </Pressable>
           )}
         </View>
       </View>
 
       {/* Tabs */}
-      <View className="flex-row px-4 mb-3 gap-2">
-        {TABS.map((tab) => (
-          <Pressable
-            key={tab.key}
-            onPress={() => setActiveTab(tab.key)}
-            className={`px-4 py-2 rounded-full ${
-              activeTab === tab.key ? "bg-indigo-500" : "bg-white border border-slate-200"
-            }`}
-          >
-            <Text
-              className={`text-sm font-semibold ${
-                activeTab === tab.key ? "text-white" : "text-slate-600"
-              }`}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="px-4 mb-2"
+        contentContainerStyle={{ gap: 8, paddingRight: 16 }}
+      >
+        {TABS.map((tab) => {
+          const isActive = activeTab === tab.key;
+          return (
+            <Pressable
+              key={tab.key}
+              onPress={() => setActiveTab(tab.key)}
+              className="px-4 py-2 rounded-full flex-row items-center gap-1.5"
+              style={{
+                backgroundColor: isActive ? "#0f172a" : "#f8fafc",
+                borderWidth: isActive ? 0 : 1,
+                borderColor: "#e2e8f0",
+              }}
             >
-              {tab.label}
-            </Text>
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: isActive ? "#ffffff" : "#64748b" }}
+              >
+                {tab.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
+      {/* Search result indicator */}
+      {search && (
+        <View className="flex-row items-center px-4 py-2 bg-green-50 mx-4 rounded-lg mb-2">
+          <Text className="text-xs text-green-700 flex-1">
+            "<Text className="font-bold">{search}</Text>" 검색 결과
+          </Text>
+          <Pressable
+            onPress={() => {
+              setSearch("");
+              setSearchInput("");
+            }}
+          >
+            <Text className="text-xs text-red-400 font-semibold">취소</Text>
           </Pressable>
-        ))}
-      </View>
+        </View>
+      )}
 
       {/* List */}
       {isLoading ? (
-        <LoadingSpinner message="Loading..." />
+        <LoadingSpinner message="불러오는 중..." />
       ) : (
         <FlatList
           data={items}
@@ -134,19 +174,34 @@ export default function RecruitScreen() {
           }}
           onEndReachedThreshold={0.5}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#16A34A"
+              colors={["#16A34A"]}
+            />
           }
           ListFooterComponent={
             isFetchingNextPage ? (
-              <LoadingSpinner message="Loading more..." />
+              <LoadingSpinner message="더 불러오는 중..." />
+            ) : !hasNextPage && items.length > 0 ? (
+              <View className="py-8 items-center">
+                <Text className="text-slate-300 text-sm">
+                  모든 항목을 불러왔습니다
+                </Text>
+              </View>
             ) : null
           }
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-20">
-              <Text className="text-slate-400 text-base">No items found</Text>
+              <Text className="text-3xl mb-3">{"🔍"}</Text>
+              <Text className="text-slate-400 text-base">
+                검색 결과가 없습니다
+              </Text>
             </View>
           }
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 20, paddingTop: 4 }}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </SafeAreaView>

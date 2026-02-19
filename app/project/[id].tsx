@@ -51,7 +51,7 @@ export default function ProjectDetailScreen() {
     } catch (e) {}
   };
 
-  if (isLoading || !project) return <LoadingSpinner message="Loading..." />;
+  if (isLoading || !project) return <LoadingSpinner message="불러오는 중..." />;
 
   // User info from detail API
   const projectUser = project.User || project.users;
@@ -66,20 +66,25 @@ export default function ProjectDetailScreen() {
     null;
 
   return (
-    <ScrollView className="flex-1 bg-white" contentContainerStyle={{ paddingBottom: 40 }}>
+    <ScrollView
+      className="flex-1 bg-white"
+      contentContainerStyle={{ paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Thumbnail */}
       {project.thumbnail_url && (
         <Image
           source={{ uri: project.thumbnail_url }}
-          className="w-full h-64"
+          className="w-full"
+          style={{ aspectRatio: 4 / 3 }}
           contentFit="cover"
           transition={300}
         />
       )}
 
-      <View className="px-4 pt-4">
+      <View className="px-5 pt-5">
         {/* Title */}
-        <Text className="text-2xl font-black text-slate-900">
+        <Text className="text-2xl font-black text-slate-900 leading-8">
           {project.title}
         </Text>
 
@@ -90,30 +95,37 @@ export default function ProjectDetailScreen() {
         >
           <Image
             source={{ uri: avatarUrl }}
-            className="w-8 h-8 rounded-full bg-slate-200"
+            className="w-9 h-9 rounded-full bg-slate-200"
             contentFit="cover"
+            style={{ borderWidth: 1, borderColor: "#e2e8f0" }}
           />
-          <Text className="ml-2 text-sm font-semibold text-slate-600">
-            {displayName}
-          </Text>
+          <View className="ml-2.5">
+            <Text className="text-sm font-semibold text-slate-700">
+              {displayName}
+            </Text>
+          </View>
         </Pressable>
 
-        {/* Stats */}
-        <View className="flex-row items-center gap-4 mt-4 py-3 border-y border-slate-100">
+        {/* Stats & Actions */}
+        <View className="flex-row items-center mt-4 py-3.5 border-y border-slate-100">
           <View className="flex-row items-center gap-1">
             <Eye size={16} color="#94a3b8" />
-            <Text className="text-sm text-slate-400">{project.views_count || 0}</Text>
+            <Text className="text-sm text-slate-400">
+              {project.views_count || 0}
+            </Text>
           </View>
-          <View className="flex-row items-center gap-1">
+          <View className="flex-row items-center gap-1 ml-4">
             <Heart size={16} color="#94a3b8" />
-            <Text className="text-sm text-slate-400">{project.likes_count || 0}</Text>
+            <Text className="text-sm text-slate-400">
+              {project.likes_count || 0}
+            </Text>
           </View>
           <View className="flex-1" />
           <Pressable onPress={handleBookmark} className="p-2">
             <Bookmark
               size={20}
-              color={bookmarked ? "#6366f1" : "#94a3b8"}
-              fill={bookmarked ? "#6366f1" : "none"}
+              color={bookmarked ? "#16A34A" : "#94a3b8"}
+              fill={bookmarked ? "#16A34A" : "none"}
             />
           </Pressable>
           <Pressable onPress={handleShare} className="p-2">
@@ -122,7 +134,7 @@ export default function ProjectDetailScreen() {
         </View>
 
         {/* Description / Content */}
-        <Text className="text-base text-slate-700 leading-7 mt-4">
+        <Text className="text-[15px] text-slate-700 leading-7 mt-4">
           {project.content_text || project.description || ""}
         </Text>
 
@@ -130,10 +142,14 @@ export default function ProjectDetailScreen() {
         {sourceUrl && (
           <Pressable
             onPress={() => Linking.openURL(sourceUrl)}
-            className="flex-row items-center gap-2 mt-6 bg-indigo-50 px-4 py-3 rounded-xl"
+            className="flex-row items-center gap-2 mt-6 bg-green-50 px-4 py-3.5 rounded-xl"
+            style={{ borderWidth: 1, borderColor: "#dcfce7" }}
           >
-            <ExternalLink size={18} color="#6366f1" />
-            <Text className="text-sm text-indigo-600 font-semibold flex-1" numberOfLines={1}>
+            <ExternalLink size={18} color="#16A34A" />
+            <Text
+              className="text-sm text-green-700 font-semibold flex-1"
+              numberOfLines={1}
+            >
               {sourceUrl}
             </Text>
           </Pressable>

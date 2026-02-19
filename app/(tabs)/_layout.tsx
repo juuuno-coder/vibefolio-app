@@ -6,13 +6,19 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#6366f1",
+        tabBarActiveTintColor: "#16A34A",
         tabBarInactiveTintColor: "#94a3b8",
         tabBarStyle: {
-          borderTopColor: "#e2e8f0",
+          borderTopColor: "#f1f5f9",
           backgroundColor: "#ffffff",
-          height: 56,
-          paddingBottom: 6,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 4,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
+          elevation: 8,
         },
         tabBarLabelStyle: {
           fontSize: 11,
@@ -23,14 +29,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "홈",
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="recruit"
         options={{
-          title: "Recruit",
+          title: "연결하기",
           tabBarIcon: ({ color, size }) => (
             <Briefcase size={size} color={color} />
           ),
@@ -39,7 +45,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "My",
+          title: "마이",
           tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />
