@@ -112,7 +112,7 @@ export function RecruitCard({ item }: Props) {
 
           {/* Title */}
           <Text
-            className="text-[14px] font-bold text-slate-900 leading-[18px]"
+            className="text-[14px] font-bold text-gray-900 leading-[18px]"
             numberOfLines={2}
           >
             {item.title}
@@ -120,7 +120,7 @@ export function RecruitCard({ item }: Props) {
 
           {/* Description preview */}
           {item.description && (
-            <Text className="text-[11px] text-slate-400 mt-1" numberOfLines={1}>
+            <Text className="text-[11px] text-gray-400 mt-1" numberOfLines={1}>
               {item.description}
             </Text>
           )}
@@ -131,7 +131,7 @@ export function RecruitCard({ item }: Props) {
           {item.date && (
             <View className="flex-row items-center gap-1">
               <Calendar size={11} color="#94a3b8" />
-              <Text className="text-[10px] text-slate-400">
+              <Text className="text-[10px] text-gray-400">
                 ~{dayjs(item.date).format("MM.DD")}
               </Text>
             </View>
@@ -140,7 +140,7 @@ export function RecruitCard({ item }: Props) {
             <View className="flex-row items-center gap-1">
               <MapPin size={11} color="#94a3b8" />
               <Text
-                className="text-[10px] text-slate-400"
+                className="text-[10px] text-gray-400"
                 numberOfLines={1}
               >
                 {item.location}

@@ -68,8 +68,8 @@ export default function RecruitScreen() {
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
       <View className="px-5 pt-3 pb-2">
-        <Text className="text-xl font-black text-slate-900">연결하기</Text>
-        <Text className="text-xs text-slate-400 mt-0.5">
+        <Text className="text-xl font-black text-gray-900">연결하기</Text>
+        <Text className="text-xs text-gray-400 mt-0.5">
           채용, 공모전, 이벤트를 한곳에서
         </Text>
       </View>
@@ -88,7 +88,7 @@ export default function RecruitScreen() {
         >
           <Search size={16} color="#94a3b8" />
           <TextInput
-            className="flex-1 ml-2 text-sm text-slate-900"
+            className="flex-1 ml-2 text-sm text-gray-900"
             placeholder="검색어를 입력하세요..."
             placeholderTextColor="#94a3b8"
             value={searchInput}
@@ -186,7 +186,7 @@ export default function RecruitScreen() {
               <LoadingSpinner message="더 불러오는 중..." />
             ) : !hasNextPage && items.length > 0 ? (
               <View className="py-8 items-center">
-                <Text className="text-slate-300 text-sm">
+                <Text className="text-gray-400 text-sm">
                   모든 항목을 불러왔습니다
                 </Text>
               </View>
@@ -195,7 +195,7 @@ export default function RecruitScreen() {
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-20">
               <Text className="text-3xl mb-3">{"🔍"}</Text>
-              <Text className="text-slate-400 text-base">
+              <Text className="text-gray-400 text-base">
                 검색 결과가 없습니다
               </Text>
             </View>
