@@ -90,6 +90,25 @@ export async function createProject(data: {
   });
 }
 
+export async function updateProject(
+  id: string,
+  data: {
+    title?: string;
+    description?: string;
+    content_text?: string;
+    thumbnail_url?: string;
+  }
+): Promise<Project> {
+  return fetchAPI<Project>(`/projects/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteProject(id: string): Promise<void> {
+  await fetchAPI(`/projects/${id}`, { method: "DELETE" });
+}
+
 export async function extractUrl(url: string): Promise<{
   title: string;
   description: string;

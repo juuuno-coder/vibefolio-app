@@ -10,6 +10,7 @@ import {
   FolderOpen,
   Star,
   Bell,
+  Pencil,
 } from "lucide-react-native";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -119,6 +120,13 @@ export default function ProfileScreen() {
                 </Text>
               )}
             </View>
+            <Pressable
+              onPress={() => router.push("/profile-edit")}
+              className="w-8 h-8 rounded-full items-center justify-center bg-slate-50"
+              style={{ borderWidth: 1, borderColor: "#e2e8f0" }}
+            >
+              <Pencil size={14} color="#64748b" />
+            </Pressable>
           </View>
 
           {/* Points */}

@@ -6,11 +6,16 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react-native";
+import * as WebBrowser from "expo-web-browser";
+import { makeRedirectUri } from "expo-auth-session";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -18,6 +23,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim() || !password) {
@@ -34,9 +40,54 @@ export default function LoginScreen() {
       if (error) throw error;
       router.replace("/(tabs)");
     } catch (e: any) {
-      Alert.alert("로그인 실패", e.message || "이메일과 비밀번호를 확인해주세요");
+      Alert.alert(
+        "로그인 실패",
+        e.message || "이메일과 비밀번호를 확인해주세요"
+      );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    try {
+      const redirectTo = makeRedirectUri({ path: "auth/callback" });
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo,
+          skipBrowserRedirect: true,
+        },
+      });
+      if (error) throw error;
+      if (data.url) {
+        const result = await WebBrowser.openAuthSessionAsync(
+          data.url,
+          redirectTo
+        );
+        if (result.type === "success" && result.url) {
+          // Extract tokens from URL fragment
+          const url = new URL(result.url);
+          const params = new URLSearchParams(
+            url.hash ? url.hash.substring(1) : url.search.substring(1)
+          );
+          const accessToken = params.get("access_token");
+          const refreshToken = params.get("refresh_token");
+
+          if (accessToken && refreshToken) {
+            await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            router.replace("/(tabs)");
+          }
+        }
+      }
+    } catch (e: any) {
+      Alert.alert("Google 로그인 실패", e.message || "다시 시도해주세요");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -57,6 +108,41 @@ export default function LoginScreen() {
           <Text className="text-sm text-slate-400 mt-1">
             크리에이터 포트폴리오 플랫폼
           </Text>
+        </View>
+
+        {/* Google Login */}
+        <Pressable
+          onPress={handleGoogleLogin}
+          disabled={googleLoading}
+          className="h-14 rounded-full flex-row items-center justify-center mb-4"
+          style={{
+            backgroundColor: "#ffffff",
+            borderWidth: 1,
+            borderColor: "#e2e8f0",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.06,
+            shadowRadius: 4,
+            elevation: 2,
+          }}
+        >
+          {googleLoading ? (
+            <ActivityIndicator color="#4285F4" />
+          ) : (
+            <>
+              <Text className="text-lg mr-2">G</Text>
+              <Text className="text-slate-700 font-semibold text-base">
+                Google로 계속하기
+              </Text>
+            </>
+          )}
+        </Pressable>
+
+        {/* Divider */}
+        <View className="flex-row items-center my-4">
+          <View className="flex-1 h-px bg-slate-200" />
+          <Text className="mx-4 text-xs text-slate-400">또는</Text>
+          <View className="flex-1 h-px bg-slate-200" />
         </View>
 
         {/* Email */}

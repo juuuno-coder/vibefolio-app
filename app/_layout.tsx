@@ -117,6 +117,18 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="project/edit"
+            options={{
+              headerShown: true,
+              headerTitle: "프로젝트 수정",
+              headerBackTitle: "뒤로",
+              headerTintColor: "#16A34A",
+              headerStyle: { backgroundColor: "#ffffff" },
+              headerShadowVisible: false,
+              headerTitleStyle: { fontWeight: "700", color: "#0f172a" },
+            }}
+          />
+          <Stack.Screen
             name="bookmarks"
             options={{
               headerShown: true,
@@ -145,6 +157,18 @@ export default function RootLayout() {
             options={{
               headerShown: true,
               headerTitle: "설정",
+              headerBackTitle: "뒤로",
+              headerTintColor: "#16A34A",
+              headerStyle: { backgroundColor: "#ffffff" },
+              headerShadowVisible: false,
+              headerTitleStyle: { fontWeight: "700", color: "#0f172a" },
+            }}
+          />
+          <Stack.Screen
+            name="profile-edit"
+            options={{
+              headerShown: true,
+              headerTitle: "프로필 수정",
               headerBackTitle: "뒤로",
               headerTintColor: "#16A34A",
               headerStyle: { backgroundColor: "#ffffff" },
