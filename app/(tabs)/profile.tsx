@@ -153,17 +153,17 @@ export default function ProfileScreen() {
           <MenuItem
             icon={<Bookmark size={20} color="#16A34A" />}
             label="북마크"
-            onPress={() => {}}
+            onPress={() => router.push("/bookmarks")}
           />
           <MenuItem
             icon={<Bell size={20} color="#16A34A" />}
-            label="알림 설정"
-            onPress={() => {}}
+            label="알림"
+            onPress={() => router.push("/notifications")}
           />
           <MenuItem
             icon={<Settings size={20} color="#16A34A" />}
             label="설정"
-            onPress={() => {}}
+            onPress={() => router.push("/settings")}
             isLast
           />
         </View>

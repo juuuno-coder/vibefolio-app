@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRecruitItem } from "@/lib/api/recruit";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import {
@@ -13,8 +13,8 @@ import {
   Share2,
 } from "lucide-react-native";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { toggleRecruitBookmark } from "@/lib/bookmarks";
-import { useState } from "react";
+import { toggleRecruitBookmark, getUserRecruitBookmarks } from "@/lib/bookmarks";
+import { useState, useEffect } from "react";
 import { Share } from "react-native";
 import { BASE_URL } from "@/lib/constants";
 import dayjs from "dayjs";
@@ -23,6 +23,7 @@ export default function RecruitDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [bookmarked, setBookmarked] = useState(false);
 
   const { data: item, isLoading } = useQuery({
@@ -31,15 +32,34 @@ export default function RecruitDetailScreen() {
     enabled: !!id,
   });
 
+  // Check bookmark status from cached IDs
+  useEffect(() => {
+    if (!user || !id) return;
+    const cached = queryClient.getQueryData<number[]>(["recruitBookmarkIds", user.id]);
+    if (cached) {
+      setBookmarked(cached.includes(Number(id)));
+    } else {
+      getUserRecruitBookmarks(user.id).then((ids) => {
+        queryClient.setQueryData(["recruitBookmarkIds", user.id], ids);
+        setBookmarked(ids.includes(Number(id)));
+      });
+    }
+  }, [user, id, queryClient]);
+
   const handleBookmark = async () => {
     if (!user) {
       router.push("/(auth)/login");
       return;
     }
+    // Optimistic update
+    setBookmarked((prev) => !prev);
     try {
       const result = await toggleRecruitBookmark(Number(id));
       setBookmarked(result);
+      queryClient.invalidateQueries({ queryKey: ["recruitBookmarkIds", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
     } catch (e) {
+      setBookmarked((prev) => !prev);
       console.warn("Bookmark failed:", e);
     }
   };
@@ -77,7 +97,8 @@ export default function RecruitDetailScreen() {
           className="w-full"
           style={{ aspectRatio: 16 / 9 }}
           contentFit="cover"
-          transition={300}
+          transition={200}
+          cachePolicy="memory-disk"
         />
       )}
 

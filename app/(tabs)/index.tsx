@@ -5,6 +5,8 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  TextInput,
+  Modal,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -13,7 +15,7 @@ import {
   Plus,
   Bell,
   Search,
-  Heart,
+  X,
   Layers,
   Camera,
   Wand2,
@@ -27,17 +29,14 @@ import {
   Code,
   Smartphone,
   Gamepad2,
-  Clock,
-  Flame,
-  Eye,
   ChevronDown,
 } from "lucide-react-native";
 import { getProjects, type Project } from "@/lib/api/projects";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { LoadingSpinner, SkeletonCard } from "@/components/ui/LoadingSpinner";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 
-const LIMIT = 20;
+const LIMIT = 12; // Smaller page for faster initial load on mobile
 
 const CATEGORIES = [
   { value: "all", label: "전체보기", Icon: Layers },
@@ -68,6 +67,10 @@ export default function HomeScreen() {
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState<string>("latest");
   const [showSort, setShowSort] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const searchInputRef = useRef<TextInput>(null);
 
   const {
     data,
@@ -77,13 +80,14 @@ export default function HomeScreen() {
     isLoading,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["projects", category, sort],
+    queryKey: ["projects", category, sort, search],
     queryFn: ({ pageParam = 1 }) =>
       getProjects({
         page: pageParam,
         limit: LIMIT,
         sort,
         genre: category === "all" ? undefined : category,
+        search: search || undefined,
       }),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.hasMore ? allPages.length + 1 : undefined,
@@ -104,6 +108,17 @@ export default function HomeScreen() {
     [sort]
   );
 
+  const handleSearch = useCallback(() => {
+    const trimmed = searchInput.trim();
+    setSearch(trimmed);
+    if (trimmed) setShowSearch(false);
+  }, [searchInput]);
+
+  const clearSearch = useCallback(() => {
+    setSearch("");
+    setSearchInput("");
+  }, []);
+
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header - 56px like web mobile */}
@@ -119,13 +134,16 @@ export default function HomeScreen() {
         </View>
         <View className="flex-row items-center gap-1.5">
           <Pressable
-            onPress={() => {}}
+            onPress={() => {
+              setShowSearch(true);
+              setTimeout(() => searchInputRef.current?.focus(), 100);
+            }}
             className="w-9 h-9 rounded-full items-center justify-center"
           >
             <Search size={20} color="#6b7280" />
           </Pressable>
           <Pressable
-            onPress={() => {}}
+            onPress={() => router.push("/notifications")}
             className="w-9 h-9 rounded-full items-center justify-center"
           >
             <Bell size={20} color="#6b7280" />
@@ -139,6 +157,55 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </View>
+
+      {/* Search overlay */}
+      <Modal visible={showSearch} animationType="fade" transparent>
+        <View className="flex-1 bg-white">
+          <SafeAreaView edges={["top"]}>
+            <View className="flex-row items-center px-4 py-2 gap-2">
+              <View className="flex-1 flex-row items-center bg-slate-50 rounded-xl px-3.5 h-11">
+                <Search size={16} color="#94a3b8" />
+                <TextInput
+                  ref={searchInputRef}
+                  className="flex-1 ml-2 text-sm text-gray-900"
+                  placeholder="프로젝트 검색..."
+                  placeholderTextColor="#94a3b8"
+                  value={searchInput}
+                  onChangeText={setSearchInput}
+                  onSubmitEditing={handleSearch}
+                  returnKeyType="search"
+                  autoFocus
+                />
+                {searchInput.length > 0 && (
+                  <Pressable onPress={() => setSearchInput("")}>
+                    <X size={16} color="#94a3b8" />
+                  </Pressable>
+                )}
+              </View>
+              <Pressable
+                onPress={() => {
+                  setShowSearch(false);
+                  if (!search) setSearchInput("");
+                }}
+              >
+                <Text className="text-sm font-semibold text-gray-500">취소</Text>
+              </Pressable>
+            </View>
+          </SafeAreaView>
+        </View>
+      </Modal>
+
+      {/* Active search indicator */}
+      {search && (
+        <View className="flex-row items-center px-4 py-2 bg-green-50 mx-4 rounded-lg mb-2">
+          <Text className="text-xs text-green-700 flex-1">
+            "<Text className="font-bold">{search}</Text>" 검색 결과
+          </Text>
+          <Pressable onPress={clearSearch}>
+            <Text className="text-xs text-red-400 font-semibold">취소</Text>
+          </Pressable>
+        </View>
+      )}
 
       {/* Category Filter Bar - matching web StickyMenu */}
       <View
@@ -274,7 +341,11 @@ export default function HomeScreen() {
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage();
           }}
-          onEndReachedThreshold={0.3}
+          onEndReachedThreshold={0.5}
+          removeClippedSubviews
+          maxToRenderPerBatch={6}
+          windowSize={7}
+          initialNumToRender={4}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

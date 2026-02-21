@@ -2,6 +2,7 @@ import { View, Text, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { Heart, Eye } from "lucide-react-native";
+import { memo } from "react";
 import type { Project } from "@/lib/api/projects";
 
 interface Props {
@@ -26,7 +27,7 @@ function addCommas(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 }
 
-export function ProjectCard({ project }: Props) {
+export const ProjectCard = memo(function ProjectCard({ project }: Props) {
   const router = useRouter();
   const user = project.users || project.User;
   const displayName = user?.username || "Unknown";
@@ -59,7 +60,9 @@ export function ProjectCard({ project }: Props) {
             style={{ aspectRatio: 4 / 3 }}
             contentFit="cover"
             transition={200}
+            cachePolicy="memory-disk"
             placeholder={{ blurhash: "LKO2?U%2Tw=w]~RBVZRi};RPxuwH" }}
+            recyclingKey={project.project_id}
           />
         ) : (
           <View
@@ -116,6 +119,7 @@ export function ProjectCard({ project }: Props) {
                 source={{ uri: avatarUrl }}
                 className="w-full h-full"
                 contentFit="cover"
+                cachePolicy="memory-disk"
               />
             </View>
             <Text
@@ -146,4 +150,4 @@ export function ProjectCard({ project }: Props) {
       </View>
     </Pressable>
   );
-}
+});

@@ -2,6 +2,7 @@ import { View, Text, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { Calendar, MapPin, ChevronRight } from "lucide-react-native";
+import { memo } from "react";
 import dayjs from "dayjs";
 import type { RecruitItem } from "@/lib/api/recruit";
 
@@ -34,7 +35,7 @@ function getTypeBadge(type: string) {
   }
 }
 
-export function RecruitCard({ item }: Props) {
+export const RecruitCard = memo(function RecruitCard({ item }: Props) {
   const router = useRouter();
   const dday = getDDay(item.date);
   const badge = getTypeBadge(item.type);
@@ -60,6 +61,8 @@ export function RecruitCard({ item }: Props) {
             style={{ width: 110, aspectRatio: 3 / 4 }}
             contentFit="cover"
             transition={200}
+            cachePolicy="memory-disk"
+            recyclingKey={String(item.id)}
           />
         ) : (
           <View
@@ -153,4 +156,4 @@ export function RecruitCard({ item }: Props) {
       </View>
     </Pressable>
   );
-}
+});

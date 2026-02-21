@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProject } from "@/lib/api/projects";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import {
@@ -12,8 +12,8 @@ import {
   Bookmark,
 } from "lucide-react-native";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { toggleBookmark } from "@/lib/bookmarks";
-import { useState } from "react";
+import { toggleBookmark, getUserBookmarks } from "@/lib/bookmarks";
+import { useState, useEffect } from "react";
 import { Share } from "react-native";
 import { BASE_URL } from "@/lib/constants";
 
@@ -21,6 +21,7 @@ export default function ProjectDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [bookmarked, setBookmarked] = useState(false);
 
   const { data: project, isLoading } = useQuery({
@@ -29,15 +30,36 @@ export default function ProjectDetailScreen() {
     enabled: !!id,
   });
 
+  // Check bookmark status from cached bookmark IDs (fast, no extra query if cached)
+  useEffect(() => {
+    if (!user || !id) return;
+    const cached = queryClient.getQueryData<string[]>(["bookmarkIds", user.id]);
+    if (cached) {
+      setBookmarked(cached.includes(id));
+    } else {
+      // Fetch and cache all bookmark IDs once
+      getUserBookmarks(user.id).then((ids) => {
+        queryClient.setQueryData(["bookmarkIds", user.id], ids);
+        setBookmarked(ids.includes(id));
+      });
+    }
+  }, [user, id, queryClient]);
+
   const handleBookmark = async () => {
     if (!user) {
       router.push("/(auth)/login");
       return;
     }
+    // Optimistic update
+    setBookmarked((prev) => !prev);
     try {
       const result = await toggleBookmark(id!);
       setBookmarked(result);
+      // Invalidate bookmark cache
+      queryClient.invalidateQueries({ queryKey: ["bookmarkIds", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
     } catch (e) {
+      setBookmarked((prev) => !prev); // Revert on error
       console.warn("Bookmark failed:", e);
     }
   };
@@ -78,7 +100,8 @@ export default function ProjectDetailScreen() {
           className="w-full"
           style={{ aspectRatio: 4 / 3 }}
           contentFit="cover"
-          transition={300}
+          transition={200}
+          cachePolicy="memory-disk"
         />
       )}
 
@@ -98,6 +121,7 @@ export default function ProjectDetailScreen() {
             className="w-9 h-9 rounded-full bg-slate-200"
             contentFit="cover"
             style={{ borderWidth: 1, borderColor: "#e2e8f0" }}
+            cachePolicy="memory-disk"
           />
           <View className="ml-2.5">
             <Text className="text-sm font-semibold text-slate-700">

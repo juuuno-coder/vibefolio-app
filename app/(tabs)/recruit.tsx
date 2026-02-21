@@ -15,7 +15,7 @@ import { RecruitCard } from "@/components/ui/RecruitCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useState, useCallback } from "react";
 
-const LIMIT = 20;
+const LIMIT = 10; // Smaller page for faster mobile load
 const TABS = [
   { key: "all", label: "전체" },
   { key: "job", label: "채용" },
@@ -173,6 +173,10 @@ export default function RecruitScreen() {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage();
           }}
           onEndReachedThreshold={0.5}
+          removeClippedSubviews
+          maxToRenderPerBatch={5}
+          windowSize={7}
+          initialNumToRender={5}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
