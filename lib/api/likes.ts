@@ -1,4 +1,5 @@
 import { fetchAPI } from "./client";
+import { supabase } from "../supabase";
 
 export async function toggleLike(
   projectId: string | number
@@ -12,8 +13,12 @@ export async function toggleLike(
 export async function getLikeStatus(
   projectId: string | number
 ): Promise<boolean> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
   const res = await fetchAPI<{ liked: boolean }>(
-    `/likes?projectId=${projectId}&checkStatus=true`
+    `/likes?userId=${user.id}&projectId=${projectId}`
   );
   return res.liked;
 }

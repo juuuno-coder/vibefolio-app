@@ -30,7 +30,6 @@ import {
   MessageCircle,
   Send,
   Trash2,
-  MoreHorizontal,
   Pencil,
 } from "lucide-react-native";
 import { useAuth } from "@/lib/auth/AuthContext";
