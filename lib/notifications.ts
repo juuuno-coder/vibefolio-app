@@ -1,7 +1,10 @@
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { supabase } from "./supabase";
+
+const EAS_PROJECT_ID = Constants.expoConfig?.extra?.eas?.projectId ?? "";
 
 // Configure notification handler
 Notifications.setNotificationHandler({
@@ -48,7 +51,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
   // Get Expo push token
   try {
     const tokenData = await Notifications.getExpoPushTokenAsync({
-      projectId: "0fadd9e1-510c-43f9-a45c-742502b16bd5", // EAS project ID (update after eas init)
+      projectId: EAS_PROJECT_ID, // EAS project ID (update after eas init)
     });
     return tokenData.data;
   } catch (e) {
@@ -77,7 +80,7 @@ export async function savePushToken(token: string): Promise<void> {
 export async function removePushToken(): Promise<void> {
   try {
     const tokenData = await Notifications.getExpoPushTokenAsync({
-      projectId: "0fadd9e1-510c-43f9-a45c-742502b16bd5",
+      projectId: EAS_PROJECT_ID,
     });
 
     const {

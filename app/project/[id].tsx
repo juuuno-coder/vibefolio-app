@@ -54,6 +54,8 @@ export default function ProjectDetailScreen() {
   const [likesCount, setLikesCount] = useState(0);
   const [commentText, setCommentText] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
+  const scrollViewRef = React.useRef<ScrollView>(null);
+  const commentSectionY = React.useRef(0);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ["project", id],
@@ -223,6 +225,7 @@ export default function ProjectDetailScreen() {
       keyboardVerticalOffset={90}
     >
       <ScrollView
+        ref={scrollViewRef}
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
@@ -309,7 +312,7 @@ export default function ProjectDetailScreen() {
             </Pressable>
             <Pressable
               onPress={() => {
-                /* scroll to comments */
+                scrollViewRef.current?.scrollTo({ y: commentSectionY.current, animated: true });
               }}
               className="flex-row items-center gap-1 ml-4"
             >
@@ -354,7 +357,7 @@ export default function ProjectDetailScreen() {
           )}
 
           {/* Comments Section */}
-          <View className="mt-8">
+          <View className="mt-8" onLayout={(e) => { commentSectionY.current = e.nativeEvent.layout.y; }}>
             <Text className="text-base font-bold text-slate-900 mb-4">
               댓글 {comments.length > 0 && `${comments.length}`}
             </Text>

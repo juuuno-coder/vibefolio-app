@@ -3,6 +3,7 @@
     "name": "Vibefolio",
     "slug": "vibefolio-app",
     "version": "1.0.0",
+    "description": "창작자와 평가자가 함께하는 프로젝트 평가 플랫폼. 전문 평가위원과 참여 고객의 피드백으로 프로젝트의 진짜 가치를 발견하세요.",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -92,7 +93,14 @@
       "eas": {
         "projectId": "0fadd9e1-510c-43f9-a45c-742502b16bd5"
       },
-      "router": {}
+      "router": {},
+      "developer": {
+        "name": "Vibefolio",
+        "email": "duscontactus@gmail.com",
+        "url": "https://www.vibefolio.net"
+      },
+      "privacyPolicyUrl": "https://www.vibefolio.net/policy/privacy",
+      "termsOfServiceUrl": "https://www.vibefolio.net/policy/terms"
     },
     "owner": "juuuno1116"
   }
